@@ -27,9 +27,20 @@ model UserProfile {
   user_id      String     @id @default(uuid())
   firstName    String
   lastName     String
+  userName     String
+  gender       String
+  bio          String
+  addressLine1 String?
+  addressLine2 String?
+  city         String?
+  state        String?
+  country      String?
+  postalCode   String?
+  latitude     Decimal?   @db.Decimal(10, 7)
+  longitude    Decimal?   @db.Decimal(10, 7)
   countryCode  String     @default("+91")
   mobileNumber String     @unique
-  user_type    UserType   @default(TRADESMAN)
+  user_type    UserType   @default(USER)
   isVerified   Boolean    @default(false)
   isDeleted    Boolean    @default(false)
   status       UserStatus @default(PENDING)
@@ -38,8 +49,12 @@ model UserProfile {
 
   cred_id String @unique
 
-  credentials UserCredentials @relation(fields: [cred_id], references: [cred_id], onDelete: Cascade)
-  userMedias  UserMedia[]
+  credentials       UserCredentials @relation(fields: [cred_id], references: [cred_id], onDelete: Cascade)
+  userMedias        UserMedia[]
+  orders            Order[]
+  sentNotifications Notification[]  @relation("NotificationSender")
+
+  receivedNotifications Notification[] @relation("NotificationReceiver")
 
   @@map("user_profiles")
 }
@@ -85,6 +100,264 @@ model UserMedia {
   @@map("user_medias")
 }
 
+model Product {
+  product_id String @id @default(uuid())
+
+  name        String
+  slug        String  @unique
+  description String? @db.Text
+
+  thumbnail String?
+
+  status ProductStatus @default(ACTIVE)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  variants   ProductVariant[]
+  orderItems OrderItem[]
+
+  @@map("products")
+}
+
+model ProductVariant {
+  variant_id String @id @default(uuid())
+
+  product_id String
+
+  size  String
+  color String
+
+  sku String @unique
+
+  price Decimal @db.Decimal(10, 2)
+
+  stock Int @default(0)
+
+  status ProductStatus @default(ACTIVE)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  product Product @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
+
+  orderItems OrderItem[]
+
+  @@index([product_id])
+  @@map("product_variants")
+}
+
+model Theme {
+  theme_id String @id @default(uuid())
+
+  name        String
+  description String? @db.Text
+
+  thumbnail String?
+
+  prompt String? @db.Text
+
+  status ThemeStatus @default(ACTIVE)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  personalizations Personalization[]
+
+  @@map("themes")
+}
+
+model Order {
+  order_id String @id @default(uuid())
+
+  orderNumber String @unique
+
+  user_id String
+
+  status OrderStatus @default(PENDING)
+
+  paymentStatus PaymentStatus @default(PENDING)
+
+  subtotal       Decimal @db.Decimal(10, 2)
+  discount       Decimal @default(0) @db.Decimal(10, 2)
+  shippingCharge Decimal @default(0) @db.Decimal(10, 2)
+  tax            Decimal @default(0) @db.Decimal(10, 2)
+  totalAmount    Decimal @db.Decimal(10, 2)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user UserProfile @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  orderItems OrderItem[]
+
+  personalization Personalization?
+
+  notifications Notification[]
+
+  @@index([user_id])
+  @@map("orders")
+}
+
+model OrderItem {
+  item_id String @id @default(uuid())
+
+  order_id String
+
+  product_id String
+
+  variant_id String
+
+  quantity Int
+
+  price Decimal @db.Decimal(10, 2)
+
+  createdAt DateTime @default(now())
+
+  order Order @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
+
+  product Product @relation(fields: [product_id], references: [product_id])
+
+  variant ProductVariant @relation(fields: [variant_id], references: [variant_id])
+
+  @@index([order_id])
+  @@index([product_id])
+  @@index([variant_id])
+  @@map("order_items")
+}
+
+model Personalization {
+  personalization_id String @id @default(uuid())
+
+  order_id String @unique
+
+  theme_id String
+
+  uploadedImage String?
+
+  customerPrompt String? @db.Text
+
+  generatedJoke String? @db.Text
+
+  regenerationCount Int @default(0)
+
+  status PersonalizationStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order Order @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
+
+  theme Theme @relation(fields: [theme_id], references: [theme_id])
+
+  artwork Artwork?
+
+  @@index([theme_id])
+  @@map("personalizations")
+}
+
+model Artwork {
+  artwork_id String @id @default(uuid())
+
+  personalization_id String @unique
+
+  previewImage String?
+
+  finalImage String?
+
+  status ArtworkStatus @default(PENDING)
+
+  approvedBy String?
+
+  approvedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  personalization Personalization @relation(fields: [personalization_id], references: [personalization_id], onDelete: Cascade)
+
+  @@map("artworks")
+}
+
+model Notification {
+  notification_id String @id @default(uuid())
+
+  sender_id String?
+
+  receiver_id String
+
+  order_id String?
+
+  title String
+
+  message String @db.Text
+
+  image String?
+
+  type NotificationType
+
+  role NotificationRole
+
+  isRead Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sender UserProfile? @relation("NotificationSender", fields: [sender_id], references: [user_id])
+
+  receiver UserProfile @relation("NotificationReceiver", fields: [receiver_id], references: [user_id])
+
+  order Order? @relation(fields: [order_id], references: [order_id])
+
+  @@index([receiver_id])
+  @@index([sender_id])
+  @@index([order_id])
+  @@map("notifications")
+}
+
+enum ThemeStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum PersonalizationStatus {
+  PENDING
+  GENERATED
+  APPROVED
+}
+
+enum ArtworkStatus {
+  PENDING
+  GENERATED
+  APPROVED
+  REJECTED
+}
+
+enum NotificationRole {
+  USER
+  SUPER_ADMIN
+}
+
+enum NotificationType {
+  ORDER_CREATED
+  ORDER_APPROVED
+  ORDER_REJECTED
+  ORDER_COMPLETED
+  GENERAL
+}
+
+enum ProductStatus {
+  ACTIVE
+  INACTIVE
+}
+
 enum UserStatus {
   PENDING
   ACTIVE
@@ -92,14 +365,20 @@ enum UserStatus {
 }
 
 enum UserType {
-  TRADESMAN
+  USER
   SUPER_ADMIN
-  SUB_ADMIN
-  COMPETENT_PERSON
-  PROJECT_MANAGER
 }
 
 enum MediaType {
   IMAGE
   VIDEO
+}
+
+enum OrderStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  PROCESSING
+  COMPLETED
+  CANCELLED
 }

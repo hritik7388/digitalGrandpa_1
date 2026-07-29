@@ -1,4 +1,4 @@
-// src/modules/userServices/services.ts
+// src/modules/userServices/service.ts
 import { UserRepository } from "./repository";
 import { AppError, HttpStatus } from "../../common/errors";
 

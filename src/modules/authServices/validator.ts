@@ -50,6 +50,19 @@ export const registerSchema = z.object({
 export const updateProfileSchema = z.object({
   firstName: userFields.firstName.optional(),
   lastName: userFields.lastName.optional(),
+  fullName: z.string().optional(),
+
+  mobileNumber: mobileValidator.optional(),
+
+  countryCode: countryCodeValidator.optional(),
+
+  dateOfBirth: z.coerce.date().optional(),
+
+  gender: z.string().optional(),
+
+  profileImage: imageValidator.optional(),
+
+  bio: z.string().max(500, "Bio cannot exceed 500 characters").optional(),
 });
 
 // ---------------- Login ----------------

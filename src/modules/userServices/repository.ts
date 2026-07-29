@@ -22,6 +22,9 @@ export class UserRepository {
           mobileNumber: data.mobileNumber,
           countryCode: data.countryCode,
           user_type: UserType[data.user_type as keyof typeof UserType],
+          userName: "",
+          gender: "",
+          bio: "",
         },
       });
 
