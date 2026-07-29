@@ -95,42 +95,8 @@ export class AuthRepository {
       },
     });
   }
-  async updateProfileImage(userId: string, imageUrl: string) {
-    const media = await prisma.userMedia.findFirst({
-      where: {
-        user_id: userId,
-        mediaType: MediaType.IMAGE,
-      },
-    });
+ 
 
-    if (media) {
-      return prisma.userMedia.update({
-        where: {
-          media_id: media.media_id,
-        },
-        data: {
-          url: imageUrl,
-        },
-      });
-    }
-
-    return prisma.userMedia.create({
-      data: {
-        user_id: userId,
-        mediaType: MediaType.IMAGE,
-        url: imageUrl,
-      },
-    });
-  }
-
-  async getAvtar(userId: string): Promise<UserMedia | null> {
-    return prisma.userMedia.findFirst({
-      where: {
-        user_id: userId,
-        mediaType: MediaType.IMAGE,
-      },
-    });
-  }
 
   async incrementFailedLoginAttempts(credId: string) {
     return prisma.userCredentials.update({
@@ -237,17 +203,7 @@ export class AuthRepository {
     });
   }
 
-  async updateUserProfile(
-    userId: string,
-    data: Prisma.UserProfileUpdateInput,
-  ): Promise<UserProfile> {
-    return prisma.userProfile.update({
-      where: {
-        user_id: userId,
-      },
-      data,
-    });
-  }
+
   async removeDeviceSession(deviceId: string) {
     return prisma.deviceSession.deleteMany({
       where: {
@@ -256,11 +212,5 @@ export class AuthRepository {
     });
   }
 
-  async getUserProfile(credId: string): Promise<UserProfile | null> {
-    return prisma.userProfile.findUnique({
-      where: {
-        cred_id: credId,
-      },
-    });
-  }
+
 }

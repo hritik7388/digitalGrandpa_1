@@ -7,8 +7,7 @@ import {
   LoginUserInput,
   VerifyInput,
   ChangePasswordInput,
-  UpdateFcmTokenInput,
-  UpdateUserInput,
+  UpdateFcmTokenInput, 
   LogOutInput,
 } from "./validator";
 import { JwtHelper } from "../../common/helper/jwt.helper";
@@ -59,31 +58,7 @@ export class AuthService {
       data: userRes,
     };
   }
-  async updateProfile(credId: string, data: UpdateUserInput) {
-    const user = await this.repository.findUserByCredId(credId);
-
-    if (!user) {
-      throw new AppError("User not found", HttpStatus.NOT_FOUND);
-    }
-
-    const profile = await this.repository.checkUserActive(credId);
-
-    if (!profile) {
-      throw new AppError("User profile not found", HttpStatus.NOT_FOUND);
-    }
-
-    const updatedUser = await this.repository.updateUserProfile(
-      profile.user_id,
-
-      data,
-    );
-
-    return {
-      success: true,
-      message: "Profile updated successfully.",
-      data: updatedUser,
-    };
-  }
+  
   async loginUser(userData: LoginUserInput) {
     const emailExists = await this.repository.findUserByEmail(userData.email);
     if (!emailExists) {
@@ -131,16 +106,7 @@ export class AuthService {
       },
     };
   }
-  async getUserProfile(credId: string) {
-    const userProfile = await this.repository.getUserProfile(credId);
-    if (!userProfile) {
-      throw new AppError("User profile not found", HttpStatus.NOT_FOUND);
-    }
-    return {
-      message: "User profile fetched successfully",
-      data: userProfile,
-    };
-  }
+ 
   async forgetPassword(email: string) {
     const emailExists = await this.repository.findUserByEmail(email);
     if (!emailExists) {
@@ -149,7 +115,7 @@ export class AuthService {
         HttpStatus.NOT_FOUND,
       );
     }
-    const userProfile = await this.repository.checkUserActive(
+    const userProfile = await this.repository.checkUserVerify(
       emailExists.cred_id,
     );
     if (!userProfile) {
@@ -276,7 +242,7 @@ export class AuthService {
       message: "Password reset successfully.",
     };
   }
-  async chnagePassword(credId: string, userData: ChangePasswordInput) {
+  async changePassword(credId: string, userData: ChangePasswordInput) {
     const userCred = await this.repository.findUserByCredId(credId);
     if (!userCred) {
       throw new AppError("User profile not found", HttpStatus.NOT_FOUND);
@@ -360,42 +326,8 @@ export class AuthService {
       data: createDevice,
     };
   }
-  async chnageProfile(credId: string, imageUrl: string) {
-    const userCred = await this.repository.findUserByCredId(credId);
-    if (!userCred) {
-      throw new AppError("User profile not found", HttpStatus.NOT_FOUND);
-    }
-    const userProfile = await this.repository.checkUserActive(userCred.cred_id);
-    if (!userProfile) {
-      throw new AppError(
-        "User profile Deleted Unverified or not Active",
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    await this.repository.updateProfileImage(userProfile.user_id, imageUrl);
-
-    return {
-      message: "Profile image updated successfully",
-    };
-  }
-  async getAvtar(credId: string) {
-    const userCred = await this.repository.findUserByCredId(credId);
-    if (!userCred) {
-      throw new AppError("User profile not found", HttpStatus.NOT_FOUND);
-    }
-    const userProfile = await this.repository.checkUserActive(userCred.cred_id);
-    if (!userProfile) {
-      throw new AppError(
-        "User profile Deleted Unverified or not Active",
-        HttpStatus.NOT_FOUND,
-      );
-    }
-    const useravtar = await this.repository.getAvtar(userProfile.user_id);
-    return {
-      message: "Profile get successfully ",
-      data: useravtar,
-    };
-  }
+ 
+ 
   async logout(credId: string, userData: LogOutInput) {
     const user = await this.repository.findUserByCredId(credId);
 

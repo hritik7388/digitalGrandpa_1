@@ -5,8 +5,7 @@ import { AuthService } from "./service";
 import {
   LoginUserInput,
   LogOutInput,
-  RegisterUserInput,
-  UpdateUserInput,
+  RegisterUserInput, 
 } from "./validator";
 import { catchAsync, ApiResponse } from "../../common/utils";
 
@@ -27,16 +26,7 @@ export class AuthController {
     },
   );
 
-  updateUser = catchAsync(
-    async (
-      req: Request<{}, {}, UpdateUserInput>,
-      res: Response,
-    ): Promise<void> => {
-      const credId = req.user?.credId;
-      const result = await this.authService.updateProfile(credId!, req.body);
-      ApiResponse.success(res, 201, result.message, result.data);
-    },
-  );
+
 
   loginUser = catchAsync(
     async (
@@ -48,13 +38,7 @@ export class AuthController {
     },
   );
 
-  getUserProfile = catchAsync(async (req, res) => {
-    const credId = req.user?.credId;
-
-    const result = await this.authService.getUserProfile(credId!);
-
-    ApiResponse.success(res, 200, result.message, result.data);
-  });
+  
 
   forgetPassword = catchAsync(async (req, res) => {
     const { email } = req.body;
@@ -75,9 +59,9 @@ export class AuthController {
     ApiResponse.success(res, 200, result.message);
   });
 
-  chnagePassword = catchAsync(async (req, res) => {
+  changePassword = catchAsync(async (req, res) => {
     const credId = req.user?.credId;
-    const result = await this.authService.chnagePassword(credId!, req.body);
+    const result = await this.authService.changePassword(credId!, req.body);
     ApiResponse.success(res, 200, result.message);
   });
 
@@ -87,20 +71,7 @@ export class AuthController {
     ApiResponse.success(res, 200, result.message, result.data);
   });
 
-  chnageProfile = catchAsync(async (req, res) => {
-    const credId = req.user?.credId;
-    const result = await this.authService.chnageProfile(
-      credId!,
-      req.body.imageUrl,
-    );
-    ApiResponse.success(res, 200, result.message);
-  });
-
-  getAvtar = catchAsync(async (req, res) => {
-    const credId = req.user?.credId;
-    const result = await this.authService.getAvtar(credId!);
-    ApiResponse.success(res, 200, result.message, result.data);
-  });
+ 
 
   logOut = catchAsync(
     async (req: Request<{}, {}, LogOutInput>, res: Response): Promise<void> => {

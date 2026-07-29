@@ -6,8 +6,7 @@ import {
   registerSchema,
   loginSchema,
   verifySchema,
-  updateFcmTokenSchema,
-  updateProfileSchema,
+  updateFcmTokenSchema, 
   logoutSchema,
 } from "./validator";
 import { validate } from "../../common/middleware";
@@ -27,17 +26,7 @@ authRouter.post(
   authController.registerUser,
 );
 
-/**
- * @route   PUT /api/v1/auth/update-profile
- * @desc    Update user profile details
- * @access  Private
- */
-authRouter.put(
-  "/update-profile",
-  authenticate,
-  validate(updateProfileSchema),
-  authController.updateUser,
-);
+
 
 /**
  * @route   POST /api/v1/auth/login
@@ -46,12 +35,6 @@ authRouter.put(
  */
 authRouter.post("/login", validate(loginSchema), authController.loginUser);
 
-/**
- * @route   GET /api/v1/auth/profile
- * @desc    Get logged-in user profile
- * @access  Private
- */
-authRouter.get("/profile", authenticate, authController.getUserProfile);
 
 /**
  * @route   POST /api/v1/auth/forget-password
@@ -84,9 +67,9 @@ authRouter.post("/reset-password", authenticate, authController.resetPassowrd);
  * @access  Private
  */
 authRouter.post(
-  "/chnage-password",
+  "/change-password",
   authenticate,
-  authController.chnagePassword,
+  authController.changePassword,
 );
 
 /**
@@ -101,19 +84,8 @@ authRouter.put(
   authController.updateDevice,
 );
 
-/**
- * @route   PUT /api/v1/auth/change-profile
- * @desc    Update user profile image
- * @access  Private
- */
-authRouter.put("/chnage-profile", authenticate, authController.chnageProfile);
 
-/**
- * @route   GET /api/v1/auth/get-profile
- * @desc    Get user profile image/avatar
- * @access  Private
- */
-authRouter.get("/get-profile", authenticate, authController.getAvtar);
+
 
 /**
  * @route   POST /api/v1/auth/logout

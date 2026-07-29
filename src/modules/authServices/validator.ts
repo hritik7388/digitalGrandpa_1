@@ -35,36 +35,14 @@ const userFields = {
   passwordHash: passwordValidator,
   mobileNumber: mobileValidator,
   countryCode: countryCodeValidator,
-};
-
-export const imageValidator = z.string().url("Invalid image URL");
+}; 
 // ---------------- Register ----------------
 
 export const registerSchema = z.object({
   ...userFields,
   user_type: z.nativeEnum(UserType),
-});
-
-// ---------------- Update ----------------
-
-export const updateProfileSchema = z.object({
-  firstName: userFields.firstName.optional(),
-  lastName: userFields.lastName.optional(),
-  fullName: z.string().optional(),
-
-  mobileNumber: mobileValidator.optional(),
-
-  countryCode: countryCodeValidator.optional(),
-
-  dateOfBirth: z.coerce.date().optional(),
-
-  gender: z.string().optional(),
-
-  profileImage: imageValidator.optional(),
-
-  bio: z.string().max(500, "Bio cannot exceed 500 characters").optional(),
-});
-
+}); 
+  
 // ---------------- Login ----------------
 
 export const loginSchema = z.object({
@@ -114,8 +92,7 @@ export const logoutSchema = z.object({
 });
 // ---------------- Types ----------------
 
-export type RegisterUserInput = z.infer<typeof registerSchema>;
-export type UpdateUserInput = z.infer<typeof updateProfileSchema>;
+export type RegisterUserInput = z.infer<typeof registerSchema>; 
 export type LoginUserInput = z.infer<typeof loginSchema>;
 export type VerifyInput = z.infer<typeof verifySchema>;
 export type ChangePasswordInput = z.infer<typeof chnagePasswordSchema>;
