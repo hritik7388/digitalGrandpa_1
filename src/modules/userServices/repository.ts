@@ -1,7 +1,6 @@
 // src/modules/userServices/repository.ts
 
-import { MediaType, Prisma, UserCredentials, UserMedia, UserProfile, UserType } from "@prisma/client";
-// import { CreateUserInput } from "./validator";
+import { MediaType, Prisma, UserCredentials, UserMedia, UserProfile } from "@prisma/client"; 
 import prisma from "../../config/prisma";
 
 export class UserRepository {

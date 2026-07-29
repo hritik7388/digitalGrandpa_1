@@ -1,10 +1,7 @@
 // src/modules/authServices/repository.ts
 import {
-  DeviceSession,
-  MediaType,
-  Prisma,
-  UserCredentials,
-  UserMedia,
+  DeviceSession, 
+  UserCredentials, 
   UserProfile,
   UserType,
 } from "@prisma/client";
