@@ -100,52 +100,7 @@ model UserMedia {
   @@map("user_medias")
 }
 
-model Product {
-  product_id String @id @default(uuid())
-
-  name        String
-  slug        String  @unique
-  description String? @db.Text
-
-  thumbnail String?
-
-  status ProductStatus @default(ACTIVE)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  variants   ProductVariant[]
-  orderItems OrderItem[]
-
-  @@map("products")
-}
-
-model ProductVariant {
-  variant_id String @id @default(uuid())
-
-  product_id String
-
-  size  String
-  color String
-
-  sku String @unique
-
-  price Decimal @db.Decimal(10, 2)
-
-  stock Int @default(0)
-
-  status ProductStatus @default(ACTIVE)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  product Product @relation(fields: [product_id], references: [product_id], onDelete: Cascade)
-
-  orderItems OrderItem[]
-
-  @@index([product_id])
-  @@map("product_variants")
-}
+ 
 
 model Theme {
   theme_id String @id @default(uuid())
@@ -168,26 +123,37 @@ model Theme {
 }
 
 model Order {
-  order_id String @id @default(uuid())
+  order_id String @id
 
   orderNumber String @unique
 
-  user_id String
+  user_id String?
+
+  email String
+
+  financialStatus String?
+
+  fulfillmentStatus String?
+
+  subtotal Decimal @db.Decimal(10,2)
+
+  discount Decimal @default(0) @db.Decimal(10,2)
+
+  shippingCharge Decimal @default(0) @db.Decimal(10,2)
+
+  tax Decimal @default(0) @db.Decimal(10,2)
+
+  totalAmount Decimal @db.Decimal(10,2)
 
   status OrderStatus @default(PENDING)
 
-  paymentStatus PaymentStatus @default(PENDING)
-
-  subtotal       Decimal @db.Decimal(10, 2)
-  discount       Decimal @default(0) @db.Decimal(10, 2)
-  shippingCharge Decimal @default(0) @db.Decimal(10, 2)
-  tax            Decimal @default(0) @db.Decimal(10, 2)
-  totalAmount    Decimal @db.Decimal(10, 2)
+  paymentStatus PaymentStatus @default(PAID)
 
   createdAt DateTime @default(now())
+
   updatedAt DateTime @updatedAt
 
-  user UserProfile @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  user UserProfile? @relation(fields: [user_id], references: [user_id])
 
   orderItems OrderItem[]
 
@@ -196,36 +162,36 @@ model Order {
   notifications Notification[]
 
   @@index([user_id])
+
   @@map("orders")
 }
 
 model OrderItem {
-  item_id String @id @default(uuid())
+
+  item_id String @id
 
   order_id String
 
-  product_id String
+  product_id String?
 
-  variant_id String
+  variant_id String?
+
+  title String
+
+  sku String?
 
   quantity Int
 
-  price Decimal @db.Decimal(10, 2)
+  price Decimal @db.Decimal(10,2)
 
   createdAt DateTime @default(now())
 
-  order Order @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
-
-  product Product @relation(fields: [product_id], references: [product_id])
-
-  variant ProductVariant @relation(fields: [variant_id], references: [variant_id])
+  order Order    @relation(fields:[order_id],references:[order_id],onDelete:Cascade)
 
   @@index([order_id])
-  @@index([product_id])
-  @@index([variant_id])
+
   @@map("order_items")
 }
-
 model Personalization {
   personalization_id String @id @default(uuid())
 
