@@ -7,6 +7,7 @@ import {
   PaymentStatus,
   OrderStatus,
 } from "@prisma/client";
+import logger from "../config/logger";
 
 const prisma = new PrismaClient();
 const router = Router();
@@ -163,7 +164,9 @@ router.post("/orders-paid", async (req, res) => {
 
     return res.status(200).send("OK");
   } catch (error) {
-    return res.status(500).send("Internal Server Error");
+    logger.error("Failed to process Shopify orders-paid webhook", error);
+
+  return res.status(500).send("Internal Server Error");
   }
 });
 
