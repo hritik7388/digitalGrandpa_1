@@ -229,14 +229,11 @@ router.post("/orders-paid", async (req, res) => {
           })),
         });
       }
-    });
-
-    console.log("✅ Order Saved Successfully");
+    }); 
 
     return res.status(200).send("OK");
 
-  } catch (error) {
-    console.error(error);
+  } catch (error) { 
 
     return res.status(500).send("Internal Server Error");
   }
