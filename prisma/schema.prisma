@@ -100,8 +100,6 @@ model UserMedia {
   @@map("user_medias")
 }
 
- 
-
 model Theme {
   theme_id String @id @default(uuid())
 
@@ -129,45 +127,42 @@ model Order {
 
   user_id String?
 
-  email String
+  // Shopify
+  shopifyCustomerId String?
+  currency          String
+  email             String
 
-  financialStatus String?
-
+  financialStatus   String?
   fulfillmentStatus String?
 
-  subtotal Decimal @db.Decimal(10,2)
+  subtotal       Decimal @db.Decimal(10, 2)
+  discount       Decimal @default(0) @db.Decimal(10, 2)
+  shippingCharge Decimal @default(0) @db.Decimal(10, 2)
+  tax            Decimal @default(0) @db.Decimal(10, 2)
+  totalAmount    Decimal @db.Decimal(10, 2)
 
-  discount Decimal @default(0) @db.Decimal(10,2)
-
-  shippingCharge Decimal @default(0) @db.Decimal(10,2)
-
-  tax Decimal @default(0) @db.Decimal(10,2)
-
-  totalAmount Decimal @db.Decimal(10,2)
-
-  status OrderStatus @default(PENDING)
-
+  status        OrderStatus   @default(PENDING)
   paymentStatus PaymentStatus @default(PAID)
 
   createdAt DateTime @default(now())
-
   updatedAt DateTime @updatedAt
 
   user UserProfile? @relation(fields: [user_id], references: [user_id])
 
-  orderItems OrderItem[]
-
+  orderItems      OrderItem[]
   personalization Personalization?
+  notifications   Notification[]
 
-  notifications Notification[]
+  billingAddress  BillingAddress?
+  shippingAddress ShippingAddress?
+  shippingLines   ShippingLine[]
 
   @@index([user_id])
-
+  @@index([shopifyCustomerId])
   @@map("orders")
 }
 
 model OrderItem {
-
   item_id String @id
 
   order_id String
@@ -182,16 +177,101 @@ model OrderItem {
 
   quantity Int
 
-  price Decimal @db.Decimal(10,2)
+  price Decimal @db.Decimal(10, 2)
+
+  productExists Boolean @default(true)
 
   createdAt DateTime @default(now())
 
-  order Order    @relation(fields:[order_id],references:[order_id],onDelete:Cascade)
+  order Order @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
 
   @@index([order_id])
-
   @@map("order_items")
 }
+
+model BillingAddress {
+  billing_id String @id @default(uuid())
+
+  order_id String @unique
+
+  firstName String?
+
+  lastName String?
+
+  company String?
+
+  phone String?
+
+  address1 String?
+
+  address2 String?
+
+  city String?
+
+  state String?
+
+  zip String?
+
+  country String?
+
+  countryCode String?
+
+  provinceCode String?
+
+  order Order @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
+
+  @@map("billing_addresses")
+}
+
+model ShippingAddress {
+  shipping_id String @id @default(uuid())
+
+  order_id String @unique
+
+  firstName String?
+
+  lastName String?
+
+  company String?
+
+  phone String?
+
+  address1 String?
+
+  address2 String?
+
+  city String?
+
+  state String?
+
+  zip String?
+
+  country String?
+
+  countryCode String?
+
+  provinceCode String?
+
+  order Order @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
+
+  @@map("shipping_addresses")
+}
+
+model ShippingLine {
+  shipping_line_id String @id
+
+  order_id String
+
+  title String?
+
+  price Decimal @db.Decimal(10, 2)
+
+  order Order @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
+
+  @@index([order_id])
+  @@map("shipping_lines")
+}
+
 model Personalization {
   personalization_id String @id @default(uuid())
 
