@@ -141,10 +141,7 @@ router.post("/orders-paid", async (req, res) => {
           },
         });
       }
-
-      //----------------------------------------
-      // SHIPPING LINES
-      //----------------------------------------
+ 
 
       await tx.shippingLine.deleteMany({
         where: {
