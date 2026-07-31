@@ -9,9 +9,7 @@ const router = Router();
 router.post("/orders-paid", async (req, res) => {
   try {
     const payload = req.body;
-
-    console.log("=========== SHOPIFY WEBHOOK ===========");
-    console.log(JSON.stringify(payload, null, 2));
+ 
 
     await prisma.$transaction(async (tx) => {
 
