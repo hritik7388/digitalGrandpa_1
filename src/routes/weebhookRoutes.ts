@@ -1,6 +1,11 @@
 // src/routes/weebhookRoutes.ts
 import { Router } from "express";
-import { Prisma, PrismaClient, PaymentStatus, OrderStatus } from "@prisma/client";
+import {
+  Prisma,
+  PrismaClient,
+  PaymentStatus,
+  OrderStatus,
+} from "@prisma/client";
 import { logger } from "../config";
 
 const prisma = new PrismaClient();
@@ -10,10 +15,8 @@ const router = Router();
 router.post("/orders-paid", async (req, res) => {
   try {
     const payload = req.body;
- 
 
     await prisma.$transaction(async (tx) => {
-
       //----------------------------------------
       // ORDER
       //----------------------------------------
@@ -36,7 +39,7 @@ router.post("/orders-paid", async (req, res) => {
           subtotal: new Prisma.Decimal(payload.subtotal_price || 0),
           discount: new Prisma.Decimal(payload.total_discounts || 0),
           shippingCharge: new Prisma.Decimal(
-            payload.total_shipping_price_set?.shop_money?.amount || 0
+            payload.total_shipping_price_set?.shop_money?.amount || 0,
           ),
           tax: new Prisma.Decimal(payload.total_tax || 0),
           totalAmount: new Prisma.Decimal(payload.total_price || 0),
@@ -69,7 +72,7 @@ router.post("/orders-paid", async (req, res) => {
           discount: new Prisma.Decimal(payload.total_discounts || 0),
 
           shippingCharge: new Prisma.Decimal(
-            payload.total_shipping_price_set?.shop_money?.amount || 0
+            payload.total_shipping_price_set?.shop_money?.amount || 0,
           ),
 
           tax: new Prisma.Decimal(payload.total_tax || 0),
@@ -230,17 +233,15 @@ router.post("/orders-paid", async (req, res) => {
           })),
         });
       }
-    }); 
+    });
 
     return res.status(200).send("OK");
+  } catch (error) {
+    logger.error("Failed to process Shopify orders-paid webhook", {
+      error,
+    });
 
-  } catch (error) { 
-  logger.error("Failed to process Shopify orders-paid webhook", {
-    error,
-  });
-
-  return res.status(500).send("Internal Server Error");
-
+    return res.status(500).send("Internal Server Error");
   }
 });
 
