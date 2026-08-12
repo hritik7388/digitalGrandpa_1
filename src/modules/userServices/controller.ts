@@ -36,10 +36,9 @@ export class UserController {
     },
   );
 
-    getAvtar = catchAsync(async (req, res) => {
-      const credId = req.user?.credId;
-      const result = await this.userService.getAvtar(credId!);
-      ApiResponse.success(res, 200, result.message, result.data);
-    });
-  
+  getAvtar = catchAsync(async (req, res) => {
+    const credId = req.user?.credId;
+    const result = await this.userService.getAvtar(credId!);
+    ApiResponse.success(res, 200, result.message, result.data);
+  });
 }
