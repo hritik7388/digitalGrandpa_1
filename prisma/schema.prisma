@@ -121,6 +121,7 @@ model Theme {
 }
 
 model Order {
+
   order_id String @id
 
   orderNumber String @unique
@@ -129,19 +130,44 @@ model Order {
 
   // Shopify
   shopifyCustomerId String?
-  currency          String
-  email             String
 
-  financialStatus   String?
+  confirmationNumber String?
+  contactEmail String?
+  presentmentCurrency String?
+
+  customerLocale String?
+  sourceName String?
+
+  totalOutstanding Decimal? @db.Decimal(10, 2)
+  totalLineItemsPrice Decimal? @db.Decimal(10, 2)
+  totalTipReceived Decimal? @db.Decimal(10, 2)
+
+  totalWeight Int?
+
+  test Boolean @default(false)
+
+  paymentGatewayNames Json?
+
+  note String? @db.Text
+  tags String?
+
+  shopifyCreatedAt DateTime?
+  shopifyProcessedAt DateTime?
+  shopifyUpdatedAt DateTime?
+
+  currency String
+  email String
+
+  financialStatus String?
   fulfillmentStatus String?
 
-  subtotal       Decimal @db.Decimal(10, 2)
-  discount       Decimal @default(0) @db.Decimal(10, 2)
+  subtotal Decimal @db.Decimal(10, 2)
+  discount Decimal @default(0) @db.Decimal(10, 2)
   shippingCharge Decimal @default(0) @db.Decimal(10, 2)
-  tax            Decimal @default(0) @db.Decimal(10, 2)
-  totalAmount    Decimal @db.Decimal(10, 2)
+  tax Decimal @default(0) @db.Decimal(10, 2)
+  totalAmount Decimal @db.Decimal(10, 2)
 
-  status        OrderStatus   @default(PENDING)
+  status OrderStatus @default(PENDING)
   paymentStatus PaymentStatus @default(PAID)
 
   createdAt DateTime @default(now())
@@ -149,43 +175,64 @@ model Order {
 
   user UserProfile? @relation(fields: [user_id], references: [user_id])
 
-  orderItems      OrderItem[]
-  personalization Personalization?
-  notifications   Notification[]
+  orderItems OrderItem[]
 
-  billingAddress  BillingAddress?
+  personalization Personalization?
+
+  notifications Notification[]
+
+  billingAddress BillingAddress?
+
   shippingAddress ShippingAddress?
-  shippingLines   ShippingLine[]
+
+  shippingLines ShippingLine[]
 
   @@index([user_id])
   @@index([shopifyCustomerId])
+
   @@map("orders")
 }
 
 model OrderItem {
+
   item_id String @id
 
   order_id String
 
   product_id String?
-
+  image String?
   variant_id String?
 
   title String
+  variantTitle String?
 
   sku String?
 
   quantity Int
+  currentQuantity Int?
+  fulfillableQuantity Int?
 
   price Decimal @db.Decimal(10, 2)
 
   productExists Boolean @default(true)
 
+  fulfillmentService String?
+  fulfillmentStatus String?
+
+  giftCard Boolean @default(false)
+  grams Int?
+
+  requiresShipping Boolean?
+  taxable Boolean?
+
+  vendor String?
+
   createdAt DateTime @default(now())
 
-  order Order @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
+  order Order @relation( fields: [order_id],    references: [order_id],    onDelete: Cascade  )
 
   @@index([order_id])
+
   @@map("order_items")
 }
 

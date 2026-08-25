@@ -62,7 +62,7 @@ export class UserServices {
       data: updatedUser,
     };
   }
-    async getAvtar(credId: string) {
+  async getAvtar(credId: string) {
     const userCred = await this.repository.findUserCredId(credId);
     if (!userCred) {
       throw new AppError("User profile not found", HttpStatus.NOT_FOUND);
@@ -78,6 +78,18 @@ export class UserServices {
     return {
       message: "Profile get successfully ",
       data: useravtar,
+    };
+  }
+  async getOrderProducts(orderNumber: string) {
+    const order = await this.repository.getOrderProducts(orderNumber);
+
+    if (!order) {
+      throw new AppError("Order not found", HttpStatus.NOT_FOUND);
+    }
+
+    return {
+      message: "Order products fetched successfully",
+      data: order,
     };
   }
 }

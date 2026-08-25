@@ -41,4 +41,12 @@ export class UserController {
     const result = await this.userService.getAvtar(credId!);
     ApiResponse.success(res, 200, result.message, result.data);
   });
+
+  getOrderProducts = catchAsync(async (req, res) => {
+    const orderNumber = String(req.query.orderNumber);
+
+    const result = await this.userService.getOrderProducts(orderNumber);
+
+    ApiResponse.success(res, 200, result.message, result.data);
+  });
 }
