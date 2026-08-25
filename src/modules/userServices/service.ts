@@ -80,16 +80,5 @@ export class UserServices {
       data: useravtar,
     };
   }
-  async getOrderProducts(orderNumber: string) {
-    const order = await this.repository.getOrderProducts(orderNumber);
-
-    if (!order) {
-      throw new AppError("Order not found", HttpStatus.NOT_FOUND);
-    }
-
-    return {
-      message: "Order products fetched successfully",
-      data: order,
-    };
-  }
+ 
 }

@@ -4,7 +4,8 @@
   "main": "server.js",
   "scripts": {
     "build": "tsc",
-    "start": "npm run build && node dist/src/app.js "
+    "start": "npm run build && node dist/src/app.js ",
+     "seed:themes": "tsx prisma/seed/theme.seed.ts"
   },
   "keywords": [],
   "author": "",

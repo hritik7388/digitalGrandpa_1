@@ -103,12 +103,9 @@ model UserMedia {
 model Theme {
   theme_id String @id @default(uuid())
 
-  name        String
-  description String? @db.Text
+  name        String 
 
-  thumbnail String?
-
-  prompt String? @db.Text
+  thumbnail String? 
 
   status ThemeStatus @default(ACTIVE)
 
@@ -116,12 +113,29 @@ model Theme {
   updatedAt DateTime @updatedAt
 
   personalizations Personalization[]
+  jokes            ThemeJoke[]
 
   @@map("themes")
 }
 
-model Order {
+model ThemeJoke {
+  joke_id String @id @default(uuid())
 
+  theme_id String
+
+  joke String @db.Text
+  jokeType String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  theme Theme @relation(fields: [theme_id], references: [theme_id], onDelete: Cascade)
+
+  @@index([theme_id])
+  @@map("theme_jokes")
+}
+
+model Order {
   order_id String @id
 
   orderNumber String @unique
@@ -131,16 +145,16 @@ model Order {
   // Shopify
   shopifyCustomerId String?
 
-  confirmationNumber String?
-  contactEmail String?
+  confirmationNumber  String?
+  contactEmail        String?
   presentmentCurrency String?
 
   customerLocale String?
-  sourceName String?
+  sourceName     String?
 
-  totalOutstanding Decimal? @db.Decimal(10, 2)
+  totalOutstanding    Decimal? @db.Decimal(10, 2)
   totalLineItemsPrice Decimal? @db.Decimal(10, 2)
-  totalTipReceived Decimal? @db.Decimal(10, 2)
+  totalTipReceived    Decimal? @db.Decimal(10, 2)
 
   totalWeight Int?
 
@@ -151,23 +165,23 @@ model Order {
   note String? @db.Text
   tags String?
 
-  shopifyCreatedAt DateTime?
+  shopifyCreatedAt   DateTime?
   shopifyProcessedAt DateTime?
-  shopifyUpdatedAt DateTime?
+  shopifyUpdatedAt   DateTime?
 
   currency String
-  email String
+  email    String
 
-  financialStatus String?
+  financialStatus   String?
   fulfillmentStatus String?
 
-  subtotal Decimal @db.Decimal(10, 2)
-  discount Decimal @default(0) @db.Decimal(10, 2)
+  subtotal       Decimal @db.Decimal(10, 2)
+  discount       Decimal @default(0) @db.Decimal(10, 2)
   shippingCharge Decimal @default(0) @db.Decimal(10, 2)
-  tax Decimal @default(0) @db.Decimal(10, 2)
-  totalAmount Decimal @db.Decimal(10, 2)
+  tax            Decimal @default(0) @db.Decimal(10, 2)
+  totalAmount    Decimal @db.Decimal(10, 2)
 
-  status OrderStatus @default(PENDING)
+  status        OrderStatus   @default(PENDING)
   paymentStatus PaymentStatus @default(PAID)
 
   createdAt DateTime @default(now())
@@ -189,27 +203,25 @@ model Order {
 
   @@index([user_id])
   @@index([shopifyCustomerId])
-
   @@map("orders")
 }
 
 model OrderItem {
-
   item_id String @id
 
   order_id String
 
   product_id String?
-  image String?
+  image      String?
   variant_id String?
 
-  title String
+  title        String
   variantTitle String?
 
   sku String?
 
-  quantity Int
-  currentQuantity Int?
+  quantity            Int
+  currentQuantity     Int?
   fulfillableQuantity Int?
 
   price Decimal @db.Decimal(10, 2)
@@ -217,22 +229,21 @@ model OrderItem {
   productExists Boolean @default(true)
 
   fulfillmentService String?
-  fulfillmentStatus String?
+  fulfillmentStatus  String?
 
   giftCard Boolean @default(false)
-  grams Int?
+  grams    Int?
 
   requiresShipping Boolean?
-  taxable Boolean?
+  taxable          Boolean?
 
   vendor String?
 
   createdAt DateTime @default(now())
 
-  order Order @relation( fields: [order_id],    references: [order_id],    onDelete: Cascade  )
+  order Order @relation(fields: [order_id], references: [order_id], onDelete: Cascade)
 
   @@index([order_id])
-
   @@map("order_items")
 }
 

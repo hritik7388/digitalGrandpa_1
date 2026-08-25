@@ -43,14 +43,6 @@ authRouter.put(
 authRouter.get("/get-profile", authenticate, userController.getAvtar);
 
 
-/**
- * @route   GET /api/v1/user/orders/:orderId/products
- * @desc    Get all products of an order
- * @access  Public
- */
-authRouter.get(
-  "/orderId",
-  userController.getOrderProducts,
-);
+
 
 export default authRouter;
