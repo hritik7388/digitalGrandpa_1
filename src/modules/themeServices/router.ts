@@ -19,4 +19,11 @@ themeRouter.get("/", themeController.getAllThemes);
  */
 themeRouter.get("/themeId", themeController.getThemeById);
 
+/**
+ * @route   GET /api/v1/themes/jokes
+ * @desc    Get jokes by theme ID with optional type, page, and limit
+ * @access  Public
+ */
+themeRouter.get("/jokes", themeController.getThemeJokes);
+
 export default themeRouter;

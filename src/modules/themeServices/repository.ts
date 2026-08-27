@@ -1,4 +1,6 @@
 // src/modules/themeServices/repository.ts
+import { JokeType } from "@prisma/client";
+import { getPagination } from "../../common/utils";
 import prisma from "../../config/prisma";
 
 export class ThemeRepository {
@@ -39,5 +41,65 @@ export class ThemeRepository {
     });
 
     return theme;
+  }
+
+  async getThemeJokes({
+    themeId,
+    type,
+    page,
+    limit,
+  }: {
+    themeId: string;
+    type?: JokeType;
+    page?: number;
+    limit?: number;
+  }) {
+    const pagination = getPagination({
+      page,
+      limit,
+    });
+
+    const where = {
+      theme_id: themeId,
+
+      ...(type && {
+        jokeType: type,
+      }),
+    };
+
+    const [jokes, total] = await prisma.$transaction([
+      prisma.themeJoke.findMany({
+        where,
+        select: {
+          joke_id: true,
+          theme_id: true,
+          joke: true,
+          jokeType: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+        orderBy: {
+          createdAt: "asc",
+        },
+        skip: pagination.skip,
+        take: pagination.take,
+      }),
+
+      prisma.themeJoke.count({
+        where,
+      }),
+    ]);
+
+    return {
+      jokes,
+      pagination: {
+        page: pagination.page,
+        limit: pagination.limit,
+        total,
+        totalPages: Math.ceil(total / pagination.limit),
+        hasNextPage: pagination.page < Math.ceil(total / pagination.limit),
+        hasPreviousPage: pagination.page > 1,
+      },
+    };
   }
 }

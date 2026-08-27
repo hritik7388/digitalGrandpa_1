@@ -25,4 +25,23 @@ export class ThemeController {
 
     ApiResponse.success(res, 200, result.message, result.data);
   });
+
+  getThemeJokes = catchAsync(async (req, res) => {
+    const themeId = String(req.query.themeId);
+
+    const type = req.query.type ? String(req.query.type) : undefined;
+
+    const page = req.query.page ? Number(req.query.page) : undefined;
+
+    const limit = req.query.limit ? Number(req.query.limit) : undefined;
+
+    const result = await this.themeServices.getThemeJokes({
+      themeId,
+      type,
+      page,
+      limit,
+    });
+
+    ApiResponse.success(res, 200, result.message, result.data);
+  });
 }

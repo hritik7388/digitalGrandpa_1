@@ -1,4 +1,5 @@
 // src/modules/themeServices/services.ts
+import { JokeType } from "@prisma/client";
 import { AppError } from "../../common/errors";
 import { ThemeRepository } from "./repository";
 
@@ -15,7 +16,7 @@ export class ThemeServices {
       message: "Themes fetched successfully",
       data: themes,
     };
-  } 
+  }
   async getThemeById(themeId: string) {
     const theme = await this.repository.getThemeById(themeId);
     if (!theme) {
@@ -28,5 +29,60 @@ export class ThemeServices {
       data: theme,
     };
     return response;
+  }
+
+  async getThemeJokes({
+    themeId,
+    type,
+    page,
+    limit,
+  }: {
+    themeId: string;
+    type?: string;
+    page?: number;
+    limit?: number;
+  }) {
+    const theme = await this.repository.getThemeById(themeId);
+
+    if (!theme) {
+      throw new AppError("Theme not found", 404);
+    }
+
+    // Validate type if provided
+    let jokeType: JokeType | undefined;
+
+    if (type) {
+      if (!Object.values(JokeType).includes(type as JokeType)) {
+        throw new AppError(
+          "Invalid joke type. Use FAMILY_FRIENDLY or ADULT",
+          400,
+        );
+      }
+
+      jokeType = type as JokeType;
+    }
+
+    const result = await this.repository.getThemeJokes({
+      themeId,
+      type: jokeType,
+      page,
+      limit,
+    });
+
+    return {
+      message: "Theme jokes fetched successfully",
+
+      data: {
+        theme: {
+          theme_id: theme.theme_id,
+          name: theme.name,
+          thumbnail: theme.thumbnail,
+        },
+
+        jokes: result.jokes,
+
+        pagination: result.pagination,
+      },
+    };
   }
 }
