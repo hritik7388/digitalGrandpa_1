@@ -124,7 +124,7 @@ model ThemeJoke {
   theme_id String
 
   joke String @db.Text
-  jokeType String
+  jokeType JokeType
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -422,6 +422,10 @@ model Notification {
 enum ThemeStatus {
   ACTIVE
   INACTIVE
+}
+enum JokeType {
+  FAMILY_FRIENDLY
+  ADULT
 }
 
 enum PaymentStatus {
