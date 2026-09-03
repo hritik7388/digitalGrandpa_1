@@ -8,8 +8,7 @@ import {
   uploadPersonalizationImageSchema,
 } from "./validator";
 
-import { validate } from "../../common/middleware";
-import { authenticate } from "../../common/middleware/auth.middleware";
+import { validate } from "../../common/middleware"; 
 
 const personalizationRouter = Router();
 

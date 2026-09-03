@@ -1,4 +1,5 @@
 // src/common/utils/uploadImages.ts
+
 import {
   S3Client,
   PutObjectCommand,
@@ -6,8 +7,15 @@ import {
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
-const allowedImageTypes = ["image/jpeg", "image/jpg", "image/png"];
-const allowedDocumentTypes = ["application/pdf"];
+const allowedImageTypes = new Set([
+  "image/jpeg",
+  "image/jpg",
+  "image/png",
+]);
+
+const allowedDocumentTypes = new Set([
+  "application/pdf",
+]);
 
 const s3Client = new S3Client({
   region: process.env.AWS_REGION,
@@ -40,9 +48,9 @@ export const generatePresignedUrl = async (
 
   let folder = "";
 
-  if (allowedImageTypes.includes(contentType)) {
+  if (allowedImageTypes.has(contentType)) {
     folder = "profile_image";
-  } else if (allowedDocumentTypes.includes(contentType)) {
+  } else if (allowedDocumentTypes.has(contentType)) {
     folder = "user_verification_docs";
   } else {
     throw new Error("Unsupported file type");

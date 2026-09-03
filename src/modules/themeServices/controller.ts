@@ -1,6 +1,5 @@
 // src/modules/themeServices/controller.ts
-import { catchAsync } from "../../common/utils";
-import { ApiResponse } from "../../common/utils";
+import { catchAsync ,ApiResponse} from "../../common/utils"; 
 import { ThemeServices } from "./services";
 
 // src/modules/themeServices/controller.ts
