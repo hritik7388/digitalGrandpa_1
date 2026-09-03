@@ -44,7 +44,7 @@ personalizationRouter.post(
  */
 personalizationRouter.post(
   "/jokes",
-  
+
   validate(selectPersonalizationJokesSchema),
   personalizationController.selectPersonalizationJokes,
 );

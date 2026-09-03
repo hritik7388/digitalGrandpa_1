@@ -1,11 +1,9 @@
-
 // src/modules/personalizeServices/repository.ts
 
 import prisma from "../../config/prisma";
 import { CreatePersonalizationInput } from "./validator";
 
 export class PersonalizationRepository {
-
   async findPersonalizationByProductId(productId: string) {
     return prisma.personalization.findFirst({
       where: {
@@ -17,9 +15,7 @@ export class PersonalizationRepository {
     });
   }
 
-  async createPersonalization(
-    data: CreatePersonalizationInput,
-  ) {
+  async createPersonalization(data: CreatePersonalizationInput) {
     return prisma.personalization.create({
       data: {
         product_id: data.product_id,
@@ -50,15 +46,14 @@ export class PersonalizationRepository {
     productId: string,
     uploadedImage: string,
   ) {
-    const personalization =
-      await prisma.personalization.findFirst({
-        where: {
-          product_id: productId,
-        },
-        orderBy: {
-          createdAt: "desc",
-        },
-      });
+    const personalization = await prisma.personalization.findFirst({
+      where: {
+        product_id: productId,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
 
     if (!personalization) {
       return null;
@@ -66,8 +61,7 @@ export class PersonalizationRepository {
 
     return prisma.personalization.update({
       where: {
-        personalization_id:
-          personalization.personalization_id,
+        personalization_id: personalization.personalization_id,
       },
       data: {
         uploadedImage,
@@ -81,7 +75,6 @@ export class PersonalizationRepository {
     jokeIds: string[],
   ) {
     return prisma.$transaction(async (tx) => {
-
       // Remove old selected jokes
       await tx.personalizationJoke.deleteMany({
         where: {
@@ -90,23 +83,19 @@ export class PersonalizationRepository {
       });
 
       // Save current selected jokes
-      const result =
-        await tx.personalizationJoke.createMany({
-          data: jokeIds.map((jokeId) => ({
-            personalization_id: personalizationId,
-            product_id: productId,
-            joke_id: jokeId,
-          })),
-        });
+      const result = await tx.personalizationJoke.createMany({
+        data: jokeIds.map((jokeId) => ({
+          personalization_id: personalizationId,
+          product_id: productId,
+          joke_id: jokeId,
+        })),
+      });
 
       return result;
     });
   }
 
-  async findJokesByIdsAndTheme(
-    jokeIds: string[],
-    themeId: string,
-  ) {
+  async findJokesByIdsAndTheme(jokeIds: string[], themeId: string) {
     return prisma.themeJoke.findMany({
       where: {
         joke_id: {
@@ -122,4 +111,3 @@ export class PersonalizationRepository {
     });
   }
 }
-
