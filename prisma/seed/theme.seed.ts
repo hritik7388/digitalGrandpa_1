@@ -5,63 +5,63 @@ const prisma = new PrismaClient();
 const themes = [
   {
     name: "Christmas",
-    thumbnail: "https://res.cloudinary.com/djghn6egw/image/upload/v1787660919/christ_dqutfi.png",
+    thumbnail: "https://res.cloudinary.com/djghn6egw/image/upload/v1788435301/christ_hxb7j9.png",
   },
   {
     name: "Halloween",
-    thumbnail: "https://res.cloudinary.com/djghn6egw/image/upload/v1787660915/hallow_xrmpfj.png",
+    thumbnail: "https://res.cloudinary.com/djghn6egw/image/upload/v1788435301/hallowen_rt9sjv.png",
   },
   {
     name: "Golf",
-    thumbnail: "https://res.cloudinary.com/djghn6egw/image/upload/v1787660914/olf_yu0cp8.png",
+    thumbnail: "https://res.cloudinary.com/djghn6egw/image/upload/v1788435303/golf_zqq2li.png",
   },
   {
     name: "Tennis",
-    thumbnail: "https://res.cloudinary.com/djghn6egw/image/upload/v1787660914/tessnis_iosxhl.png",
+    thumbnail: "https://res.cloudinary.com/djghn6egw/image/upload/v1788435302/tennis_xitols.png",
   },
   {
     name: "Pickleball",
-    thumbnail: "https://res.cloudinary.com/djghn6egw/image/upload/v1787660913/pickleball_pmc0tm.png",
+    thumbnail: "https://res.cloudinary.com/djghn6egw/image/upload/v1788435302/pickleball_r2aglp.png",
   },
   {
     name: "Baseball",
-    thumbnail: "https://res.cloudinary.com/djghn6egw/image/upload/v1787660911/base_gf2q89.png",
+    thumbnail: "https://res.cloudinary.com/djghn6egw/image/upload/v1788435302/baseball_cq5xbb.png",
   },
   {
     name: "Fishing",
-    thumbnail: "https://res.cloudinary.com/djghn6egw/image/upload/v1787660910/fishing_itw638.png",
+    thumbnail: "https://res.cloudinary.com/djghn6egw/image/upload/v1788435302/fishing_yypias.png",
   },
   {
     name: "Cycling",
-    thumbnail: "https://res.cloudinary.com/djghn6egw/image/upload/v1787660910/cycling_nwpwvy.png",
+    thumbnail: "https://res.cloudinary.com/djghn6egw/image/upload/v1788435302/cycling_od2sgb.png",
   },
   {
     name: "Cool Grandpa",
-    thumbnail: "https://res.cloudinary.com/djghn6egw/image/upload/v1787660910/cool_vbdnrr.png",
+    thumbnail: "https://res.cloudinary.com/djghn6egw/image/upload/v1788435302/cool_rcuy6t.png",
   },
   {
     name: "Tech Geek",
-    thumbnail: "https://res.cloudinary.com/djghn6egw/image/upload/v1787660910/tech_x9j5qj.png",
+    thumbnail: "https://res.cloudinary.com/djghn6egw/image/upload/v1788435302/tech_kssb7o.png",
   },
   {
     name: "Handyman",
-    thumbnail: "https://res.cloudinary.com/djghn6egw/image/upload/v1787660910/handy_qax1wk.png",
+    thumbnail: "https://res.cloudinary.com/djghn6egw/image/upload/v1788435301/handyman_q3pwiu.png",
   },
   {
     name: "Motorcycle",
-    thumbnail: "https://res.cloudinary.com/djghn6egw/image/upload/v1787660910/motor_mp11ja.png",
+    thumbnail: "https://res.cloudinary.com/djghn6egw/image/upload/v1788435301/motorcycle_btmd1p.png",
   },
   {
     name: "Grill Meister",
-    thumbnail: "https://res.cloudinary.com/djghn6egw/image/upload/v1787660910/griull_a7o9ct.png",
+    thumbnail: "https://res.cloudinary.com/djghn6egw/image/upload/v1788435301/grill_meister_bv9ycg.png",
   },
   {
     name: "Superdad",
-    thumbnail: "https://res.cloudinary.com/djghn6egw/image/upload/v1787660909/suprt_xfwrq4.png",
+    thumbnail: "https://res.cloudinary.com/djghn6egw/image/upload/v1788435300/superDad_uyjl8k.png",
   },
   {
     name: "Travel",
-    thumbnail: "https://res.cloudinary.com/djghn6egw/image/upload/v1787660909/travel_rabbxs.png",
+    thumbnail: "https://res.cloudinary.com/djghn6egw/image/upload/v1788435301/travel_gxz6n3.png",
   },
 ];
 async function seedThemes() {
@@ -70,7 +70,17 @@ async function seedThemes() {
       where: { name },
     });
 
-    if (!existingTheme) {
+    if (existingTheme) {
+      await prisma.theme.update({
+        where: {
+          theme_id: existingTheme.theme_id,
+        },
+        data: {
+          thumbnail,
+          status: "ACTIVE",
+        },
+      });
+    } else {
       await prisma.theme.create({
         data: {
           name,

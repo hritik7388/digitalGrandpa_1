@@ -23,6 +23,7 @@ import { setupGracefulShutdown } from "./common/utils/graceful-shutdown";
 import { errorMiddleware } from "./common/middleware/error.middleware";
 import { notFoundMiddleware } from "./common/middleware";
 import corsMiddleware from "./common/middleware/cors.middleware";
+import "./common/notification/workers/email.worker";
 import { env } from "./config/env";
 
 const app = express();

@@ -9,6 +9,7 @@ import {
 } from "@prisma/client";
 import axios from "axios";
 import logger from "../config/logger";
+import emailQueue from "../common/notification/queues/email.queue";
 
 const prisma = new PrismaClient();
 const router = Router();
@@ -301,9 +302,30 @@ router.post("/orders-paid", async (req, res) => {
           })),
         });
       }
-    });
+    },{
+    timeout: 15000,
+  });
+    const customerEmail =
+      payload.email || payload.contact_email;
 
-    return res.status(200).send("OK");
+    if (customerEmail) {
+      await emailQueue.add("ORDER_PERSONALIZATION", {
+        email: customerEmail,
+        orderId: payload.order_number.toString(),
+        customerName:
+          payload.customer?.first_name || "there",
+      });
+
+      logger.info(
+        `Personalization email job added | orderId=${payload.order_number} | email=${customerEmail}`,
+      );
+    } else {
+      logger.warn(
+        `Personalization email skipped: customer email not found | orderId=${payload.order_number}`,
+      );
+    }
+
+    return res.status(200).send("OK"); 
   } catch (error: any) {
     logger.error(
       `Failed to process Shopify orders-paid webhook | ${error.message}`,
