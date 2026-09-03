@@ -1,5 +1,3 @@
-// src/common/utils/uploadImages.ts
-
 import {
   S3Client,
   PutObjectCommand,
@@ -46,13 +44,7 @@ export const generatePresignedUrl = async (
   const timestamp = Date.now();
   const sanitizedFilename = filename.replace(/\s+/g, "_");
 
-  let folder = "";
-
-  if (allowedImageTypes.has(contentType)) {
-    folder = "profile_image";
-  } else if (allowedDocumentTypes.has(contentType)) {
-    folder = "user_verification_docs";
-  } else {
+  if (!allowedImageTypes.has(contentType) && !allowedDocumentTypes.has(contentType)) {
     throw new Error("Unsupported file type");
   }
 
