@@ -4,7 +4,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -103,9 +103,9 @@ model UserMedia {
 model Theme {
   theme_id String @id @default(uuid())
 
-  name        String 
+  name String
 
-  thumbnail String? 
+  thumbnail String?
 
   status ThemeStatus @default(ACTIVE)
 
@@ -123,7 +123,7 @@ model ThemeJoke {
 
   theme_id String
 
-  joke String @db.Text
+  joke     String   @db.Text
   jokeType JokeType
 
   createdAt DateTime @default(now())
@@ -332,18 +332,13 @@ model ShippingLine {
 
 model Personalization {
   personalization_id String @id @default(uuid())
-
-  order_id String @unique
+  forWhom            String
+  product_id         String
+  order_id           String @unique
 
   theme_id String
 
   uploadedImage String?
-
-  customerPrompt String? @db.Text
-
-  generatedJoke String? @db.Text
-
-  regenerationCount Int @default(0)
 
   status PersonalizationStatus @default(PENDING)
 
@@ -354,10 +349,29 @@ model Personalization {
 
   theme Theme @relation(fields: [theme_id], references: [theme_id])
 
-  artwork Artwork?
+  artwork              Artwork?
+  personalizationJokes PersonalizationJoke[]
 
   @@index([theme_id])
   @@map("personalizations")
+}
+
+model PersonalizationJoke {
+  personalization_joke_id String @id @default(uuid())
+
+  personalization_id String
+  product_id         String
+  joke_id            String
+
+  createdAt DateTime @default(now())
+
+  personalization Personalization @relation(fields: [personalization_id], references: [personalization_id], onDelete: Cascade)
+
+  @@unique([personalization_id, joke_id])
+  @@index([personalization_id])
+  @@index([product_id])
+  @@index([joke_id])
+  @@map("personalization_jokes")
 }
 
 model Artwork {
@@ -423,6 +437,7 @@ enum ThemeStatus {
   ACTIVE
   INACTIVE
 }
+
 enum JokeType {
   FAMILY_FRIENDLY
   ADULT

@@ -3,15 +3,17 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "build": "tsc",
+    "build": "NODE_OPTIONS='--max-old-space-size=1024' tsc",
     "start": "npm run build && node dist/src/app.js ",
-     "seed:themes": "tsx prisma/seed/theme.seed.ts"
+    "seed:themes": "tsx prisma/seed/theme.seed.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1125.0",
+    "@aws-sdk/s3-request-presigner": "^3.1125.0",
     "@prisma/client": "^6.19.3",
     "axios": "^1.19.0",
     "bcrypt": "^6.0.0",
